@@ -1,11 +1,10 @@
 #
 # Version info of this repo
 #
-
 ifneq (${CI_COMMIT_TAG},) ## GitLab CI
 	GIT_COMMIT_TAG ?= ${CI_COMMIT_TAG}
 else
-	GIT_COMMIT_TAG ?= $(shell git describe --tags --abbrev=0)
+	GIT_COMMIT_TAG ?= $(shell git describe --tags --abbrev=0 2>/dev/null)
 endif
 ifneq (${CI_COMMIT_BRANCH},) ## GitLab CI
 	GIT_COMMIT_BRANCH ?= ${CI_COMMIT_BRANCH}
@@ -27,8 +26,10 @@ endif
 #
 # git-based version info
 #
-GIT_DERIVED_SEMVER ?= $(or ${GIT_COMMIT_TAG},0)-$(or ${GIT_COMMITS_SINCE_LAST_TAG},0)
+GIT_DERIVED_SEMVER_BASE ?= $(or ${GIT_COMMIT_TAG},0)-$(or ${GIT_COMMITS_SINCE_LAST_TAG},0)
+GIT_DERIVED_SEMVER ?= ${GIT_DERIVED_SEMVER_BASE}
+GIT_DERIVED_SEMVER_LONG ?= ${GIT_DERIVED_SEMVER_BASE}-$(or ${GIT_COMMIT_HASH_SHORT},000000)
 ifeq ($(GIT_TREE_STATE),dirty)
   GIT_DERIVED_SEMVER := ${GIT_DERIVED_SEMVER}-dirty
+  GIT_DERIVED_SEMVER_LONG := ${GIT_DERIVED_SEMVER_LONG}-dirty
 endif
-GIT_DERIVED_SEMVER_LONG ?= ${GIT_DERIVED_SEMVER}-$(or ${GIT_COMMIT_HASH_SHORT},000000)

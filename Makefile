@@ -9,7 +9,7 @@ include vars/uname.mk
 ##
 
 help:: ## I override help and print the version string above
-	@echo "Makefile-shared v${GIT_DERIVED_SEMVER} on ${COMMON_ARCH}"
+	@echo "Makefile-shared v${GIT_DERIVED_SEMVER_LONG} on ${COMMON_ARCH}"
 
 ## This is something very complicated.
 # That's why there's this long extra explanation here
