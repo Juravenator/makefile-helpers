@@ -11,6 +11,10 @@ INCLUDEDIR=$(dir $(filter %/help.mk,$(MAKEFILE_LIST)))
 .ONESHELL:
 .PHONY: help
 help:: ## Use `make help` to print help
+	@if [[ "${MAKECMDGOALS}" != "help" ]] && [[ "${MAKECMDGOALS}" != "" ]]; then 
+		$(MAKE) --no-print-directory explain $(subst help,,${MAKECMDGOALS})
+		exit 1
+	fi
 	@bash ${INCLUDEDIR}scripts/explain.sh "" ${MAKEFILE_LIST}
 
 # unfortunately, this commented-out code generates ugly warning messages at the start
@@ -20,6 +24,7 @@ help:: ## Use `make help` to print help
 #   # turn all other mentioned targets into no-ops
 #   $(eval $(wordlist 2,$(words ${MAKECMDGOALS}),${MAKECMDGOALS}):;@:)
 # endif
+
 ## Any target that is detectable by help (see `make explain help`) can also have a more elaborate
 # comment above to explain its use in more detail.
 # 
@@ -34,7 +39,7 @@ help:: ## Use `make help` to print help
 # <targetname>: [dependency...] ## <helptext>
 .ONESHELL:
 explain:: ## Use `make explain <target>` to print extra help if available
-	@[[ "${MAKECMDGOALS}" == "explain" ]] && $(MAKE) --no-print-directory help && echo no command given to explain
+	@[[ "${MAKECMDGOALS}" == "explain" ]] && echo -e '\033[31mno command given to explain\033[0m (see `make help`)'
 	i=0; for target in ${MAKECMDGOALS}; do
 		i=$$((i+1)) && [[ $$i -eq 1 ]] && continue
 		bash ${INCLUDEDIR}scripts/explain.sh $$target ${MAKEFILE_LIST} || exit 1
